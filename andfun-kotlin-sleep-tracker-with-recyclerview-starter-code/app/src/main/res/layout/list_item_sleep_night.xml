@@ -24,8 +24,7 @@
         android:id="@+id/sleep_length"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginStart="8dp"
         android:layout_marginEnd="16dp"
         android:text="TextView"
         app:layout_constraintEnd_toEndOf="parent"
@@ -37,11 +36,23 @@
         android:id="@+id/quality_string"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         android:text="Excellent!!"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/quality_image"
         app:layout_constraintTop_toBottomOf="@+id/sleep_length" />
+
+    <TextView
+        android:id="@+id/info_string"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:text="feeling"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/quality_image"
+        app:layout_constraintTop_toBottomOf="@+id/quality_string" />
 </androidx.constraintlayout.widget.ConstraintLayout>

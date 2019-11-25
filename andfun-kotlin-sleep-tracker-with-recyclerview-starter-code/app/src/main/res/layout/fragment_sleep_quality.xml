@@ -91,14 +91,11 @@
             android:layout_height="@dimen/icon_size"
             android:layout_marginStart="@dimen/margin"
             android:layout_marginTop="@dimen/margin"
-            android:layout_marginBottom="@dimen/margin"
             android:contentDescription="@string/quality_3"
             android:onClick="@{() -> sleepQualityViewModel.onSetSleepQuality(3)}"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/quality_four_image"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/quality_zero_image"
-            app:layout_constraintVertical_bias="0.0"
             app:srcCompat="@drawable/ic_sleep_3" />
 
         <ImageView
@@ -125,6 +122,21 @@
             app:layout_constraintStart_toEndOf="@+id/quality_four_image"
             app:layout_constraintTop_toTopOf="@+id/quality_four_image"
             app:srcCompat="@drawable/ic_sleep_5" />
+
+        <EditText
+            android:id="@+id/editText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:ems="10"
+            android:hint="@string/hint_sleepInfo"
+            android:inputType="text"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/quality_three_image" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
