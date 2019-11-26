@@ -32,7 +32,7 @@ import kotlinx.android.parcel.Parcelize
 @Parcelize
 data class MarsProperty(
         val id: String,
-        // used to map img_src from the JSON to imgSrcUrl in our class
+        // used to map img_src from the JSON to imgSrcUrl in our class 因為命名規則不同所以這麼使用
         @Json(name = "img_src") val imgSrcUrl: String,
         val type: String,
         val price: Double) : Parcelable {

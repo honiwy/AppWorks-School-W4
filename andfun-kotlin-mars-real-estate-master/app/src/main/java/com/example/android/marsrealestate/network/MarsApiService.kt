@@ -21,8 +21,10 @@ import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterF
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import kotlinx.coroutines.Deferred
+import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
+import retrofit2.converter.scalars.ScalarsConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -67,5 +69,6 @@ interface MarsApiService {
  * A public Api object that exposes the lazy-initialized Retrofit service
  */
 object MarsApi {
-    val retrofitService : MarsApiService by lazy { retrofit.create(MarsApiService::class.java) }
+    val retrofitService : MarsApiService by lazy {
+        retrofit.create(MarsApiService::class.java) }
 }
