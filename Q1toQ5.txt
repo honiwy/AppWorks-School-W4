@@ -1,0 +1,74 @@
+1. What is ​Polymorphism​? Try to explain in Mandarin.
+是物件導向程式的一個重要特徵,使用同樣操作介面去操作不同的物件實例
+例如遙控器就可以視為一個多型:
+每個遙控器都可以開啟對應的裝置fun openMachine，也會有一個variable batteryType標註所需的電池總類
+在後續就可以使用繼承定義:
+(1)冷氣遙控器,按下左上按鈕開啟冷氣機,使用三號電池
+(2) 房間電燈遙控器,同時按下左上按鈕開啟電燈,使用四號電池
+
+2. Here are the 7 important lifecycle methods of an ​Activity​:
+i.onCreate()
+在初始化程式之後會經過此方法,在整個activity中僅會執行一次
+在此階段可以接上過去使用者留下的紀錄,例如曾經紀錄的一周睡眠品質
+ii.onStart()
+背景會變到前景畫面時經過此方法
+在此階段繪製畫面上的一些物件
+iii.onResume()
+畫面變成可與使用者互動(get focus)時經過此方法
+可以記錄下使用者對activity的任何操作,動態更新畫面等
+iv.onPause()
+使用者即將中斷此activity(loss focus)時經過此方法
+可能此時有來電,縮小activity的視窗或準備分享至社群網站選擇其他app階段
+v.onStop()
+activity將不顯示於使用者的螢幕上時經過此方法
+vi.onDestroy()
+當使用者完整關閉本次activity時經過此方法
+vii.onRestart()  
+僅當使用者把保留在背景的視窗重新開啟的時候經過此方法,而此方法經過後會進入onStart()
+Try to explain when are they called during the lifecycle of Activity.
+
+3. What is the ​Android Jetpack​?
+Android Jetpack​是一套元件,工具以及指南讓開發者做出更好的app
+它包含一系列的資料庫,開發者可以根據需求分別納入到專案中
+使用時透過在build.gradle()的repositories加入google()
+其由四個部分組成包含了架構,介面,基礎,行為
+其解決了向後相容性的問題;當資料改變的時候仍容易管理app;
+此外使用了Kotlin的語法讓開發者減少coding的量使得開發速度與偵錯速度大幅提升
+舉例來說結構的部分就包含了udacity學到過的LiveData, ViewModel, Lifecycle等
+
+4. Key concepts in ​Android Development​: Try to research them and explain briefly.
+i.Activity
+用來指單一聚焦的活動,其通常可以透過呈現在螢幕上與使用者互動,而android以lifecycle來管理其每個階段的行為與表現
+ii.Service
+是一項通常置於背景的long-running component,一般較少有介面
+iii.Content Provider
+透過content provider將當前應用程式的資料傳送到其他應用程式去,或是透過程式碼取得來自其他應用程式已經存在的資料
+例如猜謎遊戲猜成功了要透過line與朋友分享時使用(傳出),或是使用修圖軟體開啟原已儲存在手機的影像來編輯(傳入)
+iv.Broadcast Receiver
+用來接受android系統或應用程式的事件,例如得知現在是否電量不足,是否正為飛航模式等,
+開發者便可以針對特定狀態做特定的處理
+v.Notification
+是android呈現在應用程式介面以外的地方用來提醒使用者的訊息或資訊,可能出現在裝置最上方的status bar
+而使用者可以透過下拉開起notification drawer了解相關細節或是動作(例如要回覆或是忽略)
+常見的notification像是有未讀取的line訊息,有未讀取的email等
+vi.Runtime Permission
+在適當的時機要求使用者同意權限非常重要,如果在下載時就要求許多permission多數人可能因此不下載
+在應用程式執行的時候才請使用者同意較能有比較好的結果:
+最好是要求權限之前能提供足夠訊息告知使用者為什麼需要此權限;
+在runtime使用可以再次確認使用者目前是否為同意狀態(因為可能會在設定取消先前同意之權限)
+vii.ANR
+為Application Not Responding的縮寫
+當Android應用程式的UI執行緒block很久,且應用程式在Foreground便會跳出對話視窗讓使用者選擇是否強制關閉
+viii.OOM
+為Out Of Memory的縮寫
+當JVM無法再分配記憶體給一個新物件的時候便會跳出此訊息,
+這時候耗用最多記憶體以及較久沒在foreground的程式會被優先清除
+一般規定常見是不能使用超過16M的記憶體,不過會根據裝置的RAM而有不同
+ix.Exception
+x.Material Design
+為Google提出的一套同時適用Android, iOS, Web等各種平台及手機,平板,電視,電腦的不同裝置的設計原則
+其被用來提升使用者感官的設計提供最佳的使用者經驗,常見像是扁平化擬物化等等
+像是螢幕按鈕點了之後會有振動像是水波紋的視覺化效果,拉起螢幕上的物件時會有陰影的紙質分層(z軸)概念等
+
+5. What is ​Coroutines​? Why we use it? Try to explain in Mandarin
+包含Default(適用CPU intensitive work), IO, Main

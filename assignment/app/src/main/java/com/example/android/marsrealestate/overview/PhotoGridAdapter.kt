@@ -36,7 +36,7 @@ private val ITEM_VIEW_TYPE_HEADER = 0
 private val ITEM_VIEW_TYPE_ITEM = 1
 
 class PhotoGridAdapter( val clickListener: PhotoGridListener ) :
-        ListAdapter<DataItem, RecyclerView.ViewHolder>(PhotoGridDiffCallback()) {
+        ListAdapter<DataItem, RecyclerView.ViewHolder>(PhotoGridDiffCallback) {
 
     private val adapterScope = CoroutineScope(Dispatchers.Default)
     fun addHeaderAndSubmitList(list: List<MarsProperty>?) {
@@ -94,7 +94,7 @@ class PhotoGridAdapter( val clickListener: PhotoGridListener ) :
         }
     }
 
-    class PhotoGridDiffCallback : DiffUtil.ItemCallback<DataItem>() {
+    companion object PhotoGridDiffCallback : DiffUtil.ItemCallback<DataItem>() {
         override fun areItemsTheSame(oldItem: DataItem, newItem: DataItem): Boolean {
             return oldItem === newItem
         }
@@ -104,8 +104,8 @@ class PhotoGridAdapter( val clickListener: PhotoGridListener ) :
         }
     }
 
-    class PhotoGridListener(val clickListener: (marsId:Long) -> Unit) {
-        fun onClick(marsProperty:MarsProperty) = clickListener(marsProperty.id.toLong())
+    class PhotoGridListener(val clickListener: (marsProperty: MarsProperty) -> Unit) {
+        fun onClick(marsProperty:MarsProperty) = clickListener(marsProperty)
     }
 
 
