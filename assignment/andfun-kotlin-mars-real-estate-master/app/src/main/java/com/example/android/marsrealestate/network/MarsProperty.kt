@@ -19,6 +19,7 @@ package com.example.android.marsrealestate.network
 
 import android.os.Parcelable
 import androidx.lifecycle.LiveData
+import com.example.android.marsrealestate.R
 import com.example.android.marsrealestate.overview.MarsApiStatus
 import com.squareup.moshi.Json
 import kotlinx.android.parcel.Parcelize
@@ -38,4 +39,10 @@ data class MarsProperty(
         val price: Double) : Parcelable {
     val isRental
         get() = type == "rent"
+    val formattedType
+        get()= if(type == "rent"){R.string.type_rent}
+               else{R.string.type_sale}
+    val formattedPrice
+        get()= price.toString()
 }
+

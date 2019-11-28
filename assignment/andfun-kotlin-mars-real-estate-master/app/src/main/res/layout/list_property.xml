@@ -36,7 +36,7 @@
             android:layout_width="0dp"
             android:layout_height="20dp"
             android:layout_marginTop="8dp"
-            android:text="@{property.type}"
+            android:text="@{property.formattedType}"
             app:layout_constraintStart_toStartOf="@+id/mars_image"
             app:layout_constraintTop_toBottomOf="@+id/mars_image" />
 
@@ -49,7 +49,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="@+id/purpose_string"
             app:layout_constraintTop_toBottomOf="@+id/purpose_string"
-            tools:text="2000" />
+            tools:text="@{property.formattedPrice}" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
