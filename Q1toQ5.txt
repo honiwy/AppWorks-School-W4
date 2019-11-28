@@ -65,10 +65,13 @@ viii.OOM
 這時候耗用最多記憶體以及較久沒在foreground的程式會被優先清除
 一般規定常見是不能使用超過16M的記憶體,不過會根據裝置的RAM而有不同
 ix.Exception
+為一種可拋出的形式,能顯示系統開發者預期可能出現的例外狀況,並執行對應應對方式
+例如在需要獲取data的時候偵測到使用者關閉數據傳輸功能時藉由exception跳出視窗提醒使用者
 x.Material Design
 為Google提出的一套同時適用Android, iOS, Web等各種平台及手機,平板,電視,電腦的不同裝置的設計原則
 其被用來提升使用者感官的設計提供最佳的使用者經驗,常見像是扁平化擬物化等等
 像是螢幕按鈕點了之後會有振動像是水波紋的視覺化效果,拉起螢幕上的物件時會有陰影的紙質分層(z軸)概念等
 
 5. What is ​Coroutines​? Why we use it? Try to explain in Mandarin
-包含Default(適用CPU intensitive work), IO, Main
+在一個處理器上多個執行緒的設計模式,透過在Android上使用Coroutines便能夠簡化要執行非同步處理時的書寫量
+會有非同步處理卻多個執行緒的需求是因為有時候操作只能在背景處理有些需求需在前景處理,但是兩者有時候會有先後處理的需求,這時候便可以使用
