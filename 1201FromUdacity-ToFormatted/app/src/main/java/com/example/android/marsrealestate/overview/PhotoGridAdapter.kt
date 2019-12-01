@@ -24,8 +24,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.android.marsrealestate.R
-import com.example.android.marsrealestate.databinding.GridViewItemBinding
-import com.example.android.marsrealestate.databinding.ListPropertyBinding
+import com.example.android.marsrealestate.databinding.LinearViewItemBinding
 import com.example.android.marsrealestate.network.MarsProperty
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -39,11 +38,10 @@ import kotlinx.coroutines.withContext
  */
 private val ITEM_VIEW_TYPE_HEADER = 0
 private val ITEM_VIEW_TYPE_ITEM = 1
-class PhotoGridAdapter( val onClickListener: OnClickListener ) :
+
+class PhotoGridAdapter( val clickListener: MarsPropertyListener ) :
         ListAdapter<DataItem, RecyclerView.ViewHolder>(DiffCallback()) {
     private val adapterScope = CoroutineScope(Dispatchers.Default)
-
-    //如果input List<MarsProperty>是null就只放Header,如果不是就放header+List<MarsProperty>//在overviewFragment用到
     fun addHeaderAndSubmitList(list: List<MarsProperty>?) {
         adapterScope.launch {
             val items = when (list) {
@@ -55,23 +53,28 @@ class PhotoGridAdapter( val onClickListener: OnClickListener ) :
             }
         }
     }
-
-    //收納MarsPropertyView之處,連到ListProperty.xml,產出一個個要顯示的MarsProperty組塊
-    class MarsPropertyViewHolder private constructor(val binding: ListPropertyBinding): RecyclerView.ViewHolder(binding.root) {
-        fun bind(marsProperty: MarsProperty,clickListener: OnClickListener) {
-            binding.property = marsProperty
-            binding.clickListener = clickListener
-            binding.executePendingBindings()
-        }
-        companion object {
-            fun from(parent: ViewGroup): MarsPropertyViewHolder {
-                val layoutInflater = LayoutInflater.from(parent.context)
-                val binding = ListPropertyBinding.inflate(layoutInflater, parent, false)
-                return MarsPropertyViewHolder(binding)
-            }
+    /**
+     * Replaces the contents of a view (invoked by the layout manager)
+     */
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        when(holder){
+            is MarsPropertyViewHolder-> {
+                val dataItem = getItem(position) as DataItem.MarsPropertyItem
+                holder.itemView.setOnClickListener {
+                    clickListener.onClick(dataItem)}
+                holder.bind(dataItem.property)}}
+    }
+    /**
+     * Create new [RecyclerView] item views (invoked by the layout manager)
+     */
+    override fun onCreateViewHolder(parent: ViewGroup,
+                                    viewType: Int): RecyclerView.ViewHolder {
+        return when (viewType) {
+            ITEM_VIEW_TYPE_HEADER -> TextViewHolder.from(parent)
+            ITEM_VIEW_TYPE_ITEM -> MarsPropertyViewHolder.from(parent)
+            else -> throw ClassCastException("Unknown viewType ${viewType}")
         }
     }
-    //收納TextView之處,連到Header.xml,產出一個要顯示的header組塊
     class TextViewHolder(view: View): RecyclerView.ViewHolder(view) {
         companion object {
             fun from(parent: ViewGroup): TextViewHolder {
@@ -81,57 +84,62 @@ class PhotoGridAdapter( val onClickListener: OnClickListener ) :
             }
         }
     }
-
-    //如果是DataItem.Header則viewType是0;如果是DataItem.MarsPropertyItem則viewType是1
     override fun getItemViewType(position: Int): Int {
         return when (getItem(position)) {
             is DataItem.Header -> ITEM_VIEW_TYPE_HEADER
             is DataItem.MarsPropertyItem -> ITEM_VIEW_TYPE_ITEM
         }
     }
-    //如果viewType是0則顯示header組塊;viewType是1則顯示MarsProperty組塊
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return when (viewType) {
-            ITEM_VIEW_TYPE_HEADER -> TextViewHolder.from(parent)
-            ITEM_VIEW_TYPE_ITEM -> MarsPropertyViewHolder.from(parent)
-            else -> throw ClassCastException("Unknown viewType ${viewType}")
+    /**
+     * The MarsPropertyViewHolder constructor takes the binding variable from the associated
+     * ListPropertyItem, which nicely gives it access to the full [MarsProperty] information.
+     */
+    class MarsPropertyViewHolder(private var binding: LinearViewItemBinding):
+            RecyclerView.ViewHolder(binding.root) {
+        fun bind(marsProperty: MarsProperty) {
+            binding.property = marsProperty
+            // This is important, because it forces the data binding to execute immediately,
+            // which allows the RecyclerView to make the correct view size measurements
+            binding.executePendingBindings()
         }
-    }
-    //如果input是MarsPropertyViewHolder就為它裝上binding的property和listener來更新
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        when (holder) {
-            is MarsPropertyViewHolder -> {
-                val marsPropertyItem = getItem(position) as DataItem.MarsPropertyItem
-                holder.bind(marsPropertyItem.marsProperty,onClickListener)
+        companion object {
+            fun from(parent: ViewGroup): MarsPropertyViewHolder {
+                val layoutInflater = LayoutInflater.from(parent.context)
+                val view = LinearViewItemBinding.inflate(layoutInflater)
+                return MarsPropertyViewHolder(view)
             }
         }
     }
 }
-//判斷是否為同一物件,是否該recycle了
+/**
+ * Allows the RecyclerView to determine which items have changed when the [List] of [MarsProperty]
+ * has been updated.
+ */
 class DiffCallback : DiffUtil.ItemCallback<DataItem>() {
     override fun areItemsTheSame(oldItem: DataItem, newItem: DataItem): Boolean {
         return oldItem === newItem
     }
+
     override fun areContentsTheSame(oldItem: DataItem, newItem: DataItem): Boolean {
-        return oldItem.id == newItem.id
+        return oldItem.property == newItem.property
     }
 }
-//?
-class OnClickListener(val clickListener: (marsPropertyId:String) -> Unit) {
-    fun onClick(marsProperty:MarsProperty) = clickListener(marsProperty.id)
+/**
+ * Custom listener that handles clicks on [RecyclerView] items.  Passes the [MarsProperty]
+ * associated with the current item to the [onClick] function.
+ * @param clickListener lambda that will be called with the current [MarsProperty]
+ */
+class MarsPropertyListener(val clickListener: (marsProperty:MarsProperty?) -> Unit) {
+    fun onClick(marsPropertyItem:DataItem) = clickListener(marsPropertyItem.property)
 }
-//?
 sealed class DataItem {
     data class MarsPropertyItem(val marsProperty: MarsProperty): DataItem() {
-        override val id = marsProperty.id
         override val property = marsProperty
     }
 
     object Header: DataItem() {
-        override val id = "header"
         override val property = null
     }
 
-    abstract val id: String
     abstract val property:MarsProperty?
 }

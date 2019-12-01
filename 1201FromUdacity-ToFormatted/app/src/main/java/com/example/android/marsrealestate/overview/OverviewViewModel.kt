@@ -17,12 +17,9 @@
 
 package com.example.android.marsrealestate.overview
 
-import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
-import com.example.android.marsrealestate.R
 import com.example.android.marsrealestate.network.MarsApi
 import com.example.android.marsrealestate.network.MarsApiFilter
 import com.example.android.marsrealestate.network.MarsProperty
@@ -35,66 +32,42 @@ enum class MarsApiStatus { LOADING, ERROR, DONE }
 /**
  * The [ViewModel] that is attached to the [OverviewFragment].
  */
-class OverviewViewModel(application: Application) : ViewModel() {
+class OverviewViewModel : ViewModel() {
 
-    private var viewModelJob = Job()
-    private val uiScope = CoroutineScope(viewModelJob + Dispatchers.Main)
-    private val _properties = MutableLiveData<List<MarsProperty>>()
-    val properties: LiveData<List<MarsProperty>>
-        get() = _properties
-    val displayPropertyType = Transformations.map(properties) {
-        it.forEach{
-            application.applicationContext.getString(R.string.display_type,
-                    application.applicationContext.getString(
-                            when(it.isRental) {
-                                true -> R.string.type_rent
-                                false -> R.string.type_sale
-                            }))
-        }
-    }
-    val displayPropertyPrice = Transformations.map(properties) {
-        it.forEach{
-            var string:Int = when (it.isRental) {
-                true -> R.string.display_price_monthly_rental
-                false -> R.string.display_price}
-                application.applicationContext.getString(string, it.price)
-            }
-        }
-
+    // The internal MutableLiveData that stores the status of the most recent request
     private val _status = MutableLiveData<MarsApiStatus>()
+
+    // The external immutable LiveData for the request status
     val status: LiveData<MarsApiStatus>
         get() = _status
 
+    // Internally, we use a MutableLiveData, because we will be updating the List of MarsProperty
+    // with new values
+    private val _properties = MutableLiveData<List<DataItem>>()
+
+    // The external LiveData interface to the property is immutable, so only this class can modify
+    val properties: LiveData<List<DataItem>>
+        get() = _properties
+
+    // Internally, we use a MutableLiveData to handle navigation to the selected property
     private val _navigateToSelectedProperty = MutableLiveData<MarsProperty>()
+
+    // The external immutable LiveData for the navigation property
     val navigateToSelectedProperty: LiveData<MarsProperty>
         get() = _navigateToSelectedProperty
 
-    fun displayPropertyDetailsComplete() {
-        _navigateToSelectedProperty.value = null
-    }
-    private val _navigateToDataSelectedProperty = MutableLiveData<String>()
-    val navigateToDataSelectedProperty
-        get() = _navigateToDataSelectedProperty
+    // Create a Coroutine scope using a job to be able to cancel when needed
+    private var viewModelJob = Job()
 
-    fun onPropertyClicked(id: String) {
-        _navigateToDataSelectedProperty.value = id
-    }
-    fun onPropertyNavigated() {
-        _navigateToDataSelectedProperty.value = null
-    }
-    init {
-        getMarsRealEstateProperties(MarsApiFilter.SHOW_ALL)
-    }
-
-    fun displayPropertyDetails(marsProperty: MarsProperty) {
-        _navigateToSelectedProperty.value = marsProperty
-    }
-
+    // the Coroutine runs using the Main (UI) dispatcher
+    private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main)
 
     /**
      * Call getMarsRealEstateProperties() on init so we can display status immediately.
      */
-
+    init {
+        getMarsRealEstateProperties(MarsApiFilter.SHOW_ALL)
+    }
 
     /**
      * Gets filtered Mars real estate property information from the Mars API Retrofit service and
@@ -103,7 +76,7 @@ class OverviewViewModel(application: Application) : ViewModel() {
      * @param filter the [MarsApiFilter] that is sent as part of the web server request
      */
      private fun getMarsRealEstateProperties(filter: MarsApiFilter) {
-        uiScope.launch {
+        coroutineScope.launch {
             // Get the Deferred object for our Retrofit request
             var getPropertiesDeferred = MarsApi.retrofitService.getProperties(filter.value)
             try {
@@ -111,7 +84,9 @@ class OverviewViewModel(application: Application) : ViewModel() {
                 // this will run on a thread managed by Retrofit
                 val listResult = getPropertiesDeferred.await()
                 _status.value = MarsApiStatus.DONE
-                _properties.value = listResult
+                val headerWithOthers:MutableList<DataItem> = mutableListOf(DataItem.Header)
+                headerWithOthers.plus(listResult)
+                _properties.value = headerWithOthers
             } catch (e: Exception) {
                 _status.value = MarsApiStatus.ERROR
                 _properties.value = ArrayList()
@@ -128,7 +103,20 @@ class OverviewViewModel(application: Application) : ViewModel() {
         viewModelJob.cancel()
     }
 
+    /**
+     * When the property is clicked, set the [_navigateToSelectedProperty] [MutableLiveData]
+     * @param marsProperty The [MarsProperty] that was clicked on.
+     */
+    fun displayPropertyDetails(marsProperty: MarsProperty) {
+        _navigateToSelectedProperty.value = marsProperty
+    }
 
+    /**
+     * After the navigation has taken place, make sure navigateToSelectedProperty is set to null
+     */
+    fun displayPropertyDetailsComplete() {
+        _navigateToSelectedProperty.value = null
+    }
 
     /**
      * Updates the data set filter for the web services by querying the data with the new filter

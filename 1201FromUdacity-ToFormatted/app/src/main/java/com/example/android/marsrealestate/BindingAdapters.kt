@@ -34,7 +34,7 @@ import com.example.android.marsrealestate.overview.PhotoGridAdapter
  * When there is no Mars property data (data is null), hide the [RecyclerView], otherwise show it.
  */
 @BindingAdapter("listData")
-fun bindRecyclerView(recyclerView: RecyclerView, data: List<DataItem>?) {
+fun bindRecyclerView(recyclerView: RecyclerView, data: List<DataItem>) {
     val adapter = recyclerView.adapter as PhotoGridAdapter
     adapter.submitList(data)
 }
