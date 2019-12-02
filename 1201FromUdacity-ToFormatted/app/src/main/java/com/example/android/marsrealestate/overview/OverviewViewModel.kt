@@ -43,10 +43,10 @@ class OverviewViewModel : ViewModel() {
 
     // Internally, we use a MutableLiveData, because we will be updating the List of MarsProperty
     // with new values
-    private val _properties = MutableLiveData<List<DataItem>>()
+    private val _properties = MutableLiveData<List<MarsProperty>>()
 
     // The external LiveData interface to the property is immutable, so only this class can modify
-    val properties: LiveData<List<DataItem>>
+    val properties: LiveData<List<MarsProperty>>
         get() = _properties
 
     // Internally, we use a MutableLiveData to handle navigation to the selected property
@@ -84,9 +84,7 @@ class OverviewViewModel : ViewModel() {
                 // this will run on a thread managed by Retrofit
                 val listResult = getPropertiesDeferred.await()
                 _status.value = MarsApiStatus.DONE
-                val headerWithOthers:MutableList<DataItem> = mutableListOf(DataItem.Header)
-                headerWithOthers.plus(listResult)
-                _properties.value = headerWithOthers
+                _properties.value = listResult
             } catch (e: Exception) {
                 _status.value = MarsApiStatus.ERROR
                 _properties.value = ArrayList()

@@ -74,16 +74,9 @@ class OverviewFragment : Fragment() {
                 viewModel.displayPropertyDetailsComplete()
             }
         })
-        viewModel.properties.observe(viewLifecycleOwner, Observer {dataItemList->
-            var properties:List<MarsProperty>?
-            dataItemList?.let {
-                val count:Int = dataItemList.count()
-               if(count>1) {
-                   properties = List(count-1){dataItemList[it-1].property}
-
-                   adapter.addHeaderAndSubmitList(properties)
-               }
-            }
+        viewModel.properties.observe(viewLifecycleOwner, Observer {
+            it?.let {
+                adapter.addHeaderAndSubmitList(it)}
         })
         setHasOptionsMenu(true)
         return binding.root
